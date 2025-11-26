@@ -1,0 +1,32 @@
+name: Update GitLab Activity Graph
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # every day at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: Install dependencies
+      run: npm install node-fetch@2
+
+    - name: Generate GitLab Activity SVG
+      run: node generate-gitlab-activity.js
+
+    - name: Commit and push changes
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add gitlab-activity.svg
+        git commit -m "Update GitLab activity graph" || echo "No changes"
+        git push
