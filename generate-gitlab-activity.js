@@ -120,4 +120,31 @@ async function generate() {
   <g class="dark-mode">
   <style>
     .dark-mode { display:none }
-    @media (prefers-color-scheme: dark) { .dark-mode { display:inlin
+    @media (prefers-color-scheme: dark) { .dark-mode { display:inline } }
+  </style>
+`;
+
+  dates.forEach((date, index) => {
+    const week = Math.floor(index / 7);
+    const day = index % 7;
+    const count = activity[date] ?? 0;
+    const color = getColor(count, "dark");
+
+    const x = paddingLeft + week * (cell + gap);
+    const y = paddingTop + day * (cell + gap);
+
+    svg += `<rect x="${x}" y="${y}" width="${cell}" height="${cell}" rx="2" ry="2" fill="${color}">
+      <title>${date}: ${count} contributions</title>
+    </rect>`;
+  });
+
+  svg += `
+  </g>
+</svg>
+`;
+
+  fs.writeFileSync("gitlab-activity.svg", svg);
+  console.log("Generated EXACT GitHub-style dark/light SVG");
+}
+
+generate();
